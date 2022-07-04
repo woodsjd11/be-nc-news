@@ -39,3 +39,37 @@ describe("404 errors handled", () => {
       });
   });
 });
+describe("PATCH /api/articles/:article_id", () => {
+  describe("happy paths", () => {
+    test("patch object with the key of 'inc_votes' will update the 'votes' property by incrementing/decrementing the current value stored", () => {
+      const updatedVotes = { inc_votes: 10 };
+      return request(app)
+        .patch("/api/articles/1")
+        .send(updatedVotes)
+        .expect(201)
+        .then(({ body: { article } }) => {
+          expect(article).toEqual({
+            article_id: 1,
+            title: "Living in the shadow of a great man",
+            topic: "mitch",
+            author: "butter_bridge",
+            body: "I find this existence challenging",
+            created_at: "2020-07-09T20:11:00.000Z",
+            votes: 110,
+          });
+        });
+    });
+  });
+  describe("Errors", () => {
+    test("Invalid article_id returns a 400 error message", () => {
+      const updatedVotes = { inc_votes: 10 };
+      return request(app)
+        .patch("/api/articles/9999")
+        .send(updatedVotes)
+        .expect(400)
+        .then(({ body: { message } }) => {
+          expect(message).toEqual("400 Error: Invalid article_id");
+        });
+    });
+  });
+});
