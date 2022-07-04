@@ -61,14 +61,14 @@ describe("PATCH /api/articles/:article_id", () => {
     });
   });
   describe("Errors", () => {
-    test("Invalid article_id returns a 400 error message", () => {
+    test("Invalid article_id with typeof number returns a 404 error message", () => {
       const updatedVotes = { inc_votes: 10 };
       return request(app)
         .patch("/api/articles/9999")
         .send(updatedVotes)
-        .expect(400)
+        .expect(404)
         .then(({ body: { message } }) => {
-          expect(message).toEqual("400 Error: Invalid article_id");
+          expect(message).toEqual("404 Error: Invalid article_id");
         });
     });
   });

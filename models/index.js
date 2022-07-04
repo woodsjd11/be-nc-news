@@ -18,8 +18,8 @@ exports.updateArticleById = (body, article_id) => {
           return article.rows[0];
         }
         return Promise.reject({
-          status: 400,
-          message: "400 Error: Invalid article_id",
+          status: 404,
+          message: "404 Error: Invalid article_id",
         });
       });
   }
