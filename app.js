@@ -1,6 +1,6 @@
 const express = require("express");
 const { getTopics, getArticleById } = require("./controllers");
-const { handleCustomErrors } = require("./errors/error_handling");
+const { handleCustomErrors, handlePsqlErrors } = require("./errors/error_handling");
 const app = express();
 
 app.get("/api/topics", getTopics);
@@ -9,4 +9,5 @@ app.use("*", (req, res) => {
   res.status(404).send({ message: "404 Error: Invalid Path" });
 });
 app.use(handleCustomErrors);
+app.use(handlePsqlErrors);
 module.exports = app;
