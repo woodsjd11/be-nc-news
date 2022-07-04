@@ -18,12 +18,13 @@ describe("GET /api/topics", () => {
       return request(app)
         .get("/api/topics")
         .expect(200)
-        .then(({ body: { topics } }) =>
+        .then(({ body: { topics } }) => {
+          expect(topics).toHaveLength(3)
           topics.forEach((topic) => {
             expect(topic).toHaveProperty("slug");
             expect(topic).toHaveProperty("description");
-          })
-        );
+          });
+        });
     });
   });
 });
