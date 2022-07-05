@@ -78,7 +78,7 @@ describe("404 errors handled", () => {
 describe("GET /api/users", ()=>{
   describe("happy paths", ()=>{
     test("responds with an array of user objects",()=>{
-      return request(app).get(/api/users).expect(200).then(({body:{users}})=>{
+      return request(app).get("/api/users").expect(200).then(({body:{users}})=>{
         users.forEach((user)=>{
             expect(user).toHaveProperty("username");
             expect(user).toHaveProperty("name");
