@@ -117,5 +117,33 @@ describe("PATCH /api/articles/:article_id", () => {
           expect(message).toEqual("400 Error: Bad Request");
         });
     });
+    test("Invalid typeof inc_vote. When passed a string should return a 400 bad request message", () => {
+      const updatedVotes = { inc_votes: "wrong" };
+      return request(app)
+        .patch("/api/articles/1")
+        .send(updatedVotes)
+        .expect(400)
+        .then(({ body: { message } }) => {
+          expect(message).toEqual("400 Error: Bad Request");
+        });
+    });
+    test("inc_vote key missing, return a 200 with vote key unchanged", () => {
+      const updatedVotes = { wrongKey: 10 };
+      return request(app)
+        .patch("/api/articles/1")
+        .send(updatedVotes)
+        .expect(200)
+        .then(({ body: { article } }) => {
+          expect(article).toEqual({
+            article_id: 1,
+            title: "Living in the shadow of a great man",
+            topic: "mitch",
+            author: "butter_bridge",
+            body: "I find this existence challenging",
+            created_at: "2020-07-09T20:11:00.000Z",
+            votes: 100,
+          });
+        });
+    });
   });
 });
