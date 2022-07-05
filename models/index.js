@@ -51,7 +51,6 @@ exports.fetchCommentsByArticleId = (article_id) => {
       [article_id]
     )
     .then((data) => {
-      console.log(data);
       if (data.rowCount > 0) {
         return data.rows;
       }

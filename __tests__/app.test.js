@@ -3,6 +3,7 @@ const app = require("../app");
 const db = require("../db/connection");
 const seed = require("../db/seeds/seed");
 const testData = require("../db/data/test-data/index");
+const { getExpectedTwilioSignature } = require("twilio/lib/webhooks/webhooks");
 
 beforeEach(() => {
   return seed(testData);
@@ -174,7 +175,9 @@ describe("GET /api/articles/:article_id/comments", () => {
         .get("/api/articles/1/comments")
         .expect(200)
         .then(({ body: { comments } }) => {
+          expect(comments).toHaveLength(11);
           comments.forEach((comment) => {
+            expect(Object.keys(comment)).toHaveLength(5);
             expect(comment).toEqual(
               expect.objectContaining({
                 comment_id: expect.any(Number),
