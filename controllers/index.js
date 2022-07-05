@@ -1,4 +1,11 @@
-const { fetchTopics, fetchArticleById, fetchUsers } = require("../models");
+
+const {
+  fetchTopics,
+  updateArticleById,
+  fetchArticleById,
+  fetchUsers,
+} = require("../models");
+
 
 exports.getTopics = (req, res, next) => {
   fetchTopics().then((topics) => res.status(200).send({ topics }));
@@ -15,8 +22,24 @@ exports.getArticleById = (req, res, next) => {
     });
 };
 
+
 exports.getUsers = (req, res, next) => {
   fetchUsers().then((users) => {
     res.status(200).send({ users });
   });
+
+exports.patchArticleById = (req, res, next) => {
+  const { article_id } = req.params;
+  updateArticleById(req.body, article_id)
+    .then((article) => {
+      //// handle missing inc_votes key, 200 message
+      if (req.body.inc_votes === 0) {
+        res.status(200).send({ article });
+      }
+      res.status(201).send({ article });
+    })
+    .catch((err) => {
+      next(err);
+    });
+
 };
