@@ -190,6 +190,26 @@ describe("GET /api/articles/:article_id/comments", () => {
           });
         });
     });
+    test("200: returns an empty array of comments for a valid article_id with no comments", () => {
+      return request(app)
+        .get("/api/articles/2/comments")
+        .expect(200)
+        .then(({ body: { comments } }) => {
+          expect(comments).toHaveLength(1);
+          comments.forEach((comment) => {
+            expect(Object.keys(comment)).toHaveLength(5);
+            expect(comment).toEqual(
+              expect.objectContaining({
+                comment_id: null,
+                author: null,
+                body: null,
+                created_at: null,
+                votes: null,
+              })
+            );
+          });
+        });
+    });
   });
   describe("Errors", () => {
     test("404: article_id not found", () => {
