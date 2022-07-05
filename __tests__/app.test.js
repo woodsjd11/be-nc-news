@@ -188,4 +188,22 @@ describe("GET /api/articles/:article_id/comments", () => {
         });
     });
   });
+  describe("Errors", () => {
+    test("404: article_id not found", () => {
+      return request(app)
+        .get("/api/articles/98765/comments")
+        .expect(404)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("404 Error: Article Not Found");
+        });
+    });
+    test("400: bad request", () => {
+      return request(app)
+        .get("/api/articles/badrequest/comments")
+        .expect(400)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("400 Error: Bad Request");
+        });
+    });
+  });
 });
