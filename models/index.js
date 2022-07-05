@@ -37,3 +37,9 @@ exports.fetchArticleById = (article_id) => {
       return Promise.reject({ status: 404, message: "Article Not Found" });
     });
 };
+
+exports.fetchUsers = () => {
+  return db.query("SELECT * FROM users").then(({ rows }) => {
+    return rows;
+  });
+};

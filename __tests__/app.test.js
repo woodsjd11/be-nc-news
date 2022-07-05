@@ -75,6 +75,22 @@ describe("404 errors handled", () => {
       });
   });
 });
+
+describe("GET /api/users", ()=>{
+  describe("happy paths", ()=>{
+    test("responds with an array of user objects",()=>{
+      return request(app).get("/api/users").expect(200).then(({body:{users}})=>{
+        users.forEach((user)=>{
+            expect(user).toHaveProperty("username");
+            expect(user).toHaveProperty("name");
+            expect(user).toHaveProperty("avatar_url");
+            expect(Object.keys(user).length).toBe(3);
+        })
+      })
+    })
+  })
+})
+
 describe("PATCH /api/articles/:article_id", () => {
   describe("happy paths", () => {
     test("patch object with the key of 'inc_votes' will update the 'votes' property by incrementing/decrementing the current value stored", () => {
@@ -147,3 +163,4 @@ describe("PATCH /api/articles/:article_id", () => {
     });
   });
 });
+
