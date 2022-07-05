@@ -256,13 +256,38 @@ describe("POST /api/articles/:article_id/comments", () => {
           expect(message).toBe("404 Error: Article Not Found");
         });
     });
-    test("400: bad request", () => {
+    test("400: bad request - invalid article_id", () => {
       const postedObj = {
         body: "New comment",
         username: "butter_bridge",
       };
       return request(app)
         .post("/api/articles/badrequest/comments")
+        .send(postedObj)
+        .expect(400)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("400 Error: Bad Request");
+        });
+    });
+    test("400: bad request - invalid username", () => {
+      const postedObj = {
+        body: "New comment",
+        username: "invalid user",
+      };
+      return request(app)
+        .post("/api/articles/2/comments")
+        .send(postedObj)
+        .expect(400)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("400 Error: User Not Found");
+        });
+    });
+    test("400: bad request - missing properties", () => {
+      const postedObj = {
+        username: "invalid user",
+      };
+      return request(app)
+        .post("/api/articles/2/comments")
         .send(postedObj)
         .expect(400)
         .then(({ body: { message } }) => {
