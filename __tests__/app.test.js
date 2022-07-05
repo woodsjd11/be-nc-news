@@ -75,3 +75,17 @@ describe("404 errors handled", () => {
       });
   });
 });
+describe("GET /api/users", ()=>{
+  describe("happy paths", ()=>{
+    test("responds with an array of user objects",()=>{
+      return request(app).get(/api/users).expect(200).then(({body:{users}})=>{
+        users.forEach((user)=>{
+            expect(user).toHaveProperty("username");
+            expect(user).toHaveProperty("name");
+            expect(user).toHaveProperty("avatar_url");
+            expect(Object.keys(user).length).toBe(3);
+        })
+      })
+    })
+  })
+})
