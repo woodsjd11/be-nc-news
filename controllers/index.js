@@ -51,8 +51,13 @@ exports.patchArticleById = (req, res, next) => {
 
 exports.postCommentByArticleId = (req, res, next) => {
   const { username, body } = req.body;
-  const {article_id} = req.params
-  createCommentByArticleId(username, body, article_id).then((comment) => {
-    res.status(201).send({ comment });
-  });
+  const { article_id } = req.params;
+  createCommentByArticleId(username, body, article_id)
+    .then((comment) => {
+      res.status(201).send({ comment });
+    })
+    .catch((err) => {
+      console.log(err);
+      next(err);
+    });
 };

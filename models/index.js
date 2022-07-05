@@ -81,7 +81,11 @@ exports.createCommentByArticleId = (username, body, article_id) => {
       "INSERT INTO comments (author, body, article_id) VALUES ($1, $2, $3) RETURNING*",
       [username, body, article_id]
     )
-    .then(({ rows }) => {
-      return rows[0];
+    .then((data) => {
+      console.log(data);
+      if (data.rowCount > 0) {
+        return data.rows[0];
+      }
+      return Promise.reject({ status: 404, message: "Article Not Found" });
     });
 };

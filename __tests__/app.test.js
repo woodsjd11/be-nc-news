@@ -242,4 +242,19 @@ describe("POST /api/articles/:article_id/comments", () => {
         });
     });
   });
+  describe("Errors", () => {
+    test("404: article not found", () => {
+      const postedObj = {
+        body: "New comment",
+        username: "butter_bridge",
+      };
+      return request(app)
+        .post("/api/articles/9898/comments")
+        .send(postedObj)
+        .expect(404)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("404 Error: Article Not Found");
+        });
+    });
+  });
 });
