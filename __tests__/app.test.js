@@ -107,5 +107,15 @@ describe("PATCH /api/articles/:article_id", () => {
           expect(message).toEqual("404 Error: Article Not Found");
         });
     });
+    test("Invalid typeof article_id. When passed a string should return a 400 bad request message", () => {
+      const updatedVotes = { inc_votes: 10 };
+      return request(app)
+        .patch("/api/articles/9bah")
+        .send(updatedVotes)
+        .expect(400)
+        .then(({ body: { message } }) => {
+          expect(message).toEqual("400 Error: Bad Request");
+        });
+    });
   });
 });
