@@ -166,3 +166,23 @@ describe("PATCH /api/articles/:article_id", () => {
     });
   });
 });
+
+describe("GET /api/articles/:article_id/comments", () => {
+  describe("Happy paths", () => {
+    test("200: returns an array of comments for the given article_id", () => {
+      return request(app)
+        .get("/api/articles/1/comments")
+        .expect(200)
+        .then(({ body: { comments } }) => {
+          comments.forEach((comment) => {
+            expect(comment).toHaveProperty("comment_id");
+            expect(comment).toHaveProperty("author");
+            expect(comment).toHaveProperty("body");
+            expect(comment).toHaveProperty("created_at");
+            expect(comment).toHaveProperty("votes");
+            expect(Object.keys(comment)).toHaveLength(5);
+          });
+        });
+    });
+  });
+});
