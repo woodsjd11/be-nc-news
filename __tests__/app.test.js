@@ -256,5 +256,18 @@ describe("POST /api/articles/:article_id/comments", () => {
           expect(message).toBe("404 Error: Article Not Found");
         });
     });
+    test("400: bad request", () => {
+      const postedObj = {
+        body: "New comment",
+        username: "butter_bridge",
+      };
+      return request(app)
+        .post("/api/articles/badrequest/comments")
+        .send(postedObj)
+        .expect(400)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("400 Error: Bad Request");
+        });
+    });
   });
 });
