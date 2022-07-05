@@ -3,6 +3,7 @@ const app = require("../app");
 const db = require("../db/connection");
 const seed = require("../db/seeds/seed");
 const testData = require("../db/data/test-data/index");
+require("jest-sorted");
 
 beforeEach(() => {
   return seed(testData);
@@ -162,6 +163,37 @@ describe("PATCH /api/articles/:article_id", () => {
             created_at: "2020-07-09T20:11:00.000Z",
             votes: 100,
           });
+        });
+    });
+  });
+});
+
+describe("GET /api/articles", () => {
+  describe("Happy paths", () => {
+    test("200: returns an array of article objects", () => {
+      return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          expect(articles).toHaveLength(12);
+          articles.forEach((article) => {
+            expect(article).toHaveProperty("article_id");
+            expect(article).toHaveProperty("author");
+            expect(article).toHaveProperty("comment_count");
+            expect(article).toHaveProperty("created_at");
+            expect(article).toHaveProperty("title");
+            expect(article).toHaveProperty("topic");
+            expect(article).toHaveProperty("votes");
+            expect(Object.keys(article)).toHaveLength(7);
+          });
+        });
+    });
+    test("200: article objects are sorted by date in descending order", () => {
+      return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          expect(articles).toBeSorted({ key: "created_at", descending: true });
         });
     });
   });
