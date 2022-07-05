@@ -3,6 +3,7 @@ const app = require("../app");
 const db = require("../db/connection");
 const seed = require("../db/seeds/seed");
 const testData = require("../db/data/test-data/index");
+require("jest-sorted");
 
 beforeEach(() => {
   return seed(testData);
@@ -180,6 +181,40 @@ describe("PATCH /api/articles/:article_id", () => {
             created_at: "2020-07-09T20:11:00.000Z",
             votes: 100,
           });
+        });
+    });
+  });
+});
+
+describe("GET /api/articles", () => {
+  describe("Happy paths", () => {
+    test("200: returns an array of article objects", () => {
+      return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          expect(articles).toHaveLength(12);
+          articles.forEach((article) => {
+            expect(article).toEqual(
+              expect.objectContaining({
+                article_id: expect.any(Number),
+                author: expect.any(String),
+                comment_count: expect.any(Number),
+                created_at: expect.any(String),
+                title: expect.any(String),
+                topic: expect.any(String),
+                votes: expect.any(Number),
+              })
+            );
+          });
+        });
+    });
+    test("200: article objects are sorted by date in descending order", () => {
+      return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          expect(articles).toBeSorted({ key: "created_at", descending: true });
         });
     });
   });

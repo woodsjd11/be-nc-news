@@ -6,6 +6,33 @@ exports.fetchTopics = () => {
   });
 };
 
+exports.fetchArticleById = (article_id) => {
+  return db
+    .query("SELECT * FROM articles WHERE article_id = $1", [article_id])
+    .then((data) => {
+      if (data.rowCount > 0) {
+        return data.rows[0];
+      }
+      return Promise.reject({ status: 404, message: "Article Not Found" });
+    });
+};
+
+exports.fetchUsers = () => {
+  return db.query("SELECT * FROM users").then(({ rows }) => {
+    return rows;
+  });
+};
+
+exports.fetchArticles = () => {
+  return db
+    .query(
+      "SELECT articles.author, title, articles.article_id, topic, articles.created_at, articles.votes, COUNT(comments.article_id)::int AS comment_count FROM articles LEFT JOIN comments ON comments.article_id = articles.article_id GROUP BY articles.article_id ORDER BY articles.created_at DESC"
+    )
+    .then(({ rows }) => {
+      return rows;
+    });
+};
+
 exports.updateArticleById = (body, article_id) => {
   // handle missing inc_votes key
   if (!body.inc_votes) {
@@ -27,6 +54,7 @@ exports.updateArticleById = (body, article_id) => {
       });
     });
 };
+
 exports.fetchArticleById = (article_id) => {
   return db
     .query(
@@ -46,3 +74,4 @@ exports.fetchUsers = () => {
     return rows;
   });
 };
+
