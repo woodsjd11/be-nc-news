@@ -6,6 +6,7 @@ const {
   patchArticleById,
   getUsers,
   getArticles,
+  postCommentByArticleId,
 } = require("./controllers");
 
 const {
@@ -26,6 +27,8 @@ app.get("/api/users", getUsers);
 app.get("/api/articles", getArticles);
 
 app.patch("/api/articles/:article_id", patchArticleById);
+
+app.post("/api/articles/:article_id/comments", postCommentByArticleId);
 
 app.use("*", (req, res) => {
   res.status(404).send({ message: "404 Error: Invalid Path" });
