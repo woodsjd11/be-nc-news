@@ -13,7 +13,7 @@ afterAll(() => {
 });
 
 describe("GET /api/topics", () => {
-  describe("happy paths", () => {
+  describe("Happy paths", () => {
     test("responds with an array of topic objects, having the 'slug' and 'description' properties", () => {
       return request(app)
         .get("/api/topics")
@@ -46,7 +46,7 @@ describe("GET /api/articles/:article_id", () => {
         });
       });
   });
-  describe("Error handling", () => {
+  describe("Errors", () => {
     test("Invalid article_id returns 404", () => {
       return request(app)
         .get("/api/articles/29991")
@@ -76,23 +76,26 @@ describe("404 errors handled", () => {
   });
 });
 
-describe("GET /api/users", ()=>{
-  describe("happy paths", ()=>{
-    test("responds with an array of user objects",()=>{
-      return request(app).get("/api/users").expect(200).then(({body:{users}})=>{
-        users.forEach((user)=>{
+describe("GET /api/users", () => {
+  describe("Happy paths", () => {
+    test("responds with an array of user objects", () => {
+      return request(app)
+        .get("/api/users")
+        .expect(200)
+        .then(({ body: { users } }) => {
+          users.forEach((user) => {
             expect(user).toHaveProperty("username");
             expect(user).toHaveProperty("name");
             expect(user).toHaveProperty("avatar_url");
             expect(Object.keys(user).length).toBe(3);
-        })
-      })
-    })
-  })
-})
+          });
+        });
+    });
+  });
+});
 
 describe("PATCH /api/articles/:article_id", () => {
-  describe("happy paths", () => {
+  describe("Happy paths", () => {
     test("patch object with the key of 'inc_votes' will update the 'votes' property by incrementing/decrementing the current value stored", () => {
       const updatedVotes = { inc_votes: 10 };
       return request(app)
@@ -163,4 +166,3 @@ describe("PATCH /api/articles/:article_id", () => {
     });
   });
 });
-
