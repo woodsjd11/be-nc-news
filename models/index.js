@@ -90,15 +90,19 @@ exports.createCommentByArticleId = (username, body, article_id) => {
 exports.fetchCommentsByArticleId = (article_id) => {
   return db
     .query(
-      "SELECT comment_id, comments.votes, comments.created_at, comments.author, comments.body FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id WHERE articles.article_id = $1",
+      "SELECT comment_id, votes, created_at, author, body FROM comments WHERE comments.article_id = $1",
       [article_id]
     )
-    .then((data) => {
-      if (data.rowCount > 0) {
-        return data.rows;
-      }
-      return Promise.reject({ status: 404, message: "Article Not Found" });
+    .then(({ rows }) => {
+      return rows;
     });
 };
-
-
+exports.checkArticleExists = (article_id) => {
+  return db
+    .query("SELECT * FROM articles WHERE article_id = $1", [article_id])
+    .then(({ rowCount }) => {
+      if (rowCount === 0) {
+        return Promise.reject({ status: 404, message: "Article Not Found" });
+      }
+    });
+};
