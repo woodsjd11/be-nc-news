@@ -36,7 +36,7 @@ exports.fetchArticles = (sort_by = "created_at", order = "desc") => {
   ];
   const validOrderOptions = ["asc", "desc"];
   if (!validSortOptions.includes(sort_by) || !validOrderOptions) {
-    return Promise.reject({ status: 400, message: "400 - Invalid query" });
+    return Promise.reject({ status: 400, message: "Invalid query" });
   }
   return db
     .query(

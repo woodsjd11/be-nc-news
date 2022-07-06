@@ -205,6 +205,14 @@ describe("GET /api/articles/:article_id/comments", () => {
           });
         });
     });
+    test("200: returns an empty array of comments for a valid article_id with no comments", () => {
+      return request(app)
+        .get("/api/articles/2/comments")
+        .expect(200)
+        .then(({ body: { comments } }) => {
+          expect(comments).toHaveLength(0);
+        });
+    });
   });
 });
 
@@ -257,14 +265,15 @@ describe("GET /api/articles", () => {
         });
     });
   });
-
-  test("200: returns an empty array of comments for a valid article_id with no comments", () => {
-    return request(app)
-      .get("/api/articles/2/comments")
-      .expect(200)
-      .then(({ body: { comments } }) => {
-        expect(comments).toHaveLength(0);
-      });
+  describe("Errors", () => {
+    test("400: Bad Request when supplied with incorrect queries inc. sql injection", () => {
+      return request(app)
+        .get("/api/articles?sort_by=SELECT*FROMarticles&order=asc")
+        .expect(400)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("400 Error: Invalid query");
+        });
+    });
   });
 });
 
