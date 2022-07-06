@@ -208,7 +208,7 @@ describe("GET /api/articles/:article_id/comments", () => {
   });
 });
 
-describe.only("GET /api/articles", () => {
+describe("GET /api/articles", () => {
   describe("Happy paths", () => {
     test("200: returns an array of article objects", () => {
       return request(app)
@@ -246,6 +246,14 @@ describe.only("GET /api/articles", () => {
         .expect(200)
         .then(({ body: { articles } }) => {
           expect(articles).toBeSortedBy("title", { descending: true });
+        });
+    });
+    test("200: returns articles sorted by any valid column, ordered by ascending", () => {
+      return request(app)
+        .get("/api/articles?sort_by=author&order=asc")
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          expect(articles).toBeSortedBy("author", { ascending: true });
         });
     });
   });

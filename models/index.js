@@ -24,7 +24,7 @@ exports.fetchUsers = () => {
   });
 };
 
-exports.fetchArticles = (sort_by = 'created_at') => {
+exports.fetchArticles = (sort_by = "created_at", order = "desc") => {
   const validSortOptions = [
     "title",
     "topic",
@@ -34,12 +34,13 @@ exports.fetchArticles = (sort_by = 'created_at') => {
     "votes",
     "comment_count",
   ];
-  if (!validSortOptions.includes(sort_by)) {
+  const validOrderOptions = ["asc", "desc"];
+  if (!validSortOptions.includes(sort_by) || !validOrderOptions) {
     return Promise.reject({ status: 400, message: "400 - Invalid query" });
   }
   return db
     .query(
-      `SELECT articles.author, title, articles.article_id, topic, articles.created_at, articles.votes, COUNT(comments.article_id)::int AS comment_count FROM articles LEFT JOIN comments ON comments.article_id = articles.article_id GROUP BY articles.article_id ORDER BY ${sort_by} DESC`
+      `SELECT articles.author, title, articles.article_id, topic, articles.created_at, articles.votes, COUNT(comments.article_id)::int AS comment_count FROM articles LEFT JOIN comments ON comments.article_id = articles.article_id GROUP BY articles.article_id ORDER BY ${sort_by} ${order}`
     )
     .then(({ rows }) => {
       return rows;
