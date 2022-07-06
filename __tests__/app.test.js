@@ -232,6 +232,14 @@ describe("GET /api/articles", () => {
           });
         });
     });
+    test.only("200: returns articles sorted by default date, ordered by default descending", () => {
+      return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          expect(articles).toBeSortedBy("created_at", { descending: true });
+        });
+    });
   });
 
   test("200: returns an empty array of comments for a valid article_id with no comments", () => {
