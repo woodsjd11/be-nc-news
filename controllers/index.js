@@ -44,9 +44,14 @@ exports.getCommentsByArticleId = (req, res, next) => {
 };
 
 exports.getArticles = (req, res, next) => {
-  fetchArticles().then((articles) => {
-    res.status(200).send({ articles });
-  });
+  const { sort_by } = req.query;
+  fetchArticles(sort_by)
+    .then((articles) => {
+      res.status(200).send({ articles });
+    })
+    .catch((err) => {
+      next(err);
+    });
 };
 
 exports.patchArticleById = (req, res, next) => {

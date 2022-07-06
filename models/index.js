@@ -1,4 +1,5 @@
 const db = require("../db/connection");
+const articles = require("../db/data/test-data/articles");
 
 exports.fetchTopics = () => {
   return db.query("SELECT * FROM topics").then(({ rows }) => {
@@ -23,10 +24,22 @@ exports.fetchUsers = () => {
   });
 };
 
-exports.fetchArticles = () => {
+exports.fetchArticles = (sort_by = 'created_at') => {
+  const validSortOptions = [
+    "title",
+    "topic",
+    "author",
+    "body",
+    "created_at",
+    "votes",
+    "comment_count",
+  ];
+  if (!validSortOptions.includes(sort_by)) {
+    return Promise.reject({ status: 400, message: "400 - Invalid query" });
+  }
   return db
     .query(
-      "SELECT articles.author, title, articles.article_id, topic, articles.created_at, articles.votes, COUNT(comments.article_id)::int AS comment_count FROM articles LEFT JOIN comments ON comments.article_id = articles.article_id GROUP BY articles.article_id ORDER BY articles.created_at DESC"
+      `SELECT articles.author, title, articles.article_id, topic, articles.created_at, articles.votes, COUNT(comments.article_id)::int AS comment_count FROM articles LEFT JOIN comments ON comments.article_id = articles.article_id GROUP BY articles.article_id ORDER BY ${sort_by} DESC`
     )
     .then(({ rows }) => {
       return rows;

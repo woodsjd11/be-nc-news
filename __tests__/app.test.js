@@ -208,7 +208,7 @@ describe("GET /api/articles/:article_id/comments", () => {
   });
 });
 
-describe("GET /api/articles", () => {
+describe.only("GET /api/articles", () => {
   describe("Happy paths", () => {
     test("200: returns an array of article objects", () => {
       return request(app)
@@ -232,12 +232,20 @@ describe("GET /api/articles", () => {
           });
         });
     });
-    test.only("200: returns articles sorted by default date, ordered by default descending", () => {
+    test("200: returns articles sorted by default date, ordered by default descending", () => {
       return request(app)
         .get("/api/articles")
         .expect(200)
         .then(({ body: { articles } }) => {
           expect(articles).toBeSortedBy("created_at", { descending: true });
+        });
+    });
+    test("200: returns articles sorted by any valid column, ordered by default descending", () => {
+      return request(app)
+        .get("/api/articles?sort_by=title")
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          expect(articles).toBeSortedBy("title", { descending: true });
         });
     });
   });
