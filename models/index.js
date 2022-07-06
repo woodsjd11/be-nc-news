@@ -75,3 +75,19 @@ exports.fetchUsers = () => {
   });
 };
 
+
+exports.fetchCommentsByArticleId = (article_id) => {
+  return db
+    .query(
+      "SELECT comment_id, comments.votes, comments.created_at, comments.author, comments.body FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id WHERE articles.article_id = $1",
+      [article_id]
+    )
+    .then((data) => {
+      console.log(data);
+      if (data.rowCount > 0) {
+        return data.rows;
+      }
+      return Promise.reject({ status: 404, message: "Article Not Found" });
+    });
+};
+

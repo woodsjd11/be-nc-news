@@ -3,6 +3,7 @@ const {
   updateArticleById,
   fetchArticleById,
   fetchUsers,
+  fetchCommentsByArticleId,
   fetchArticles,
 } = require("../models");
 
@@ -28,11 +29,24 @@ exports.getUsers = (req, res, next) => {
   });
 };
 
+
+exports.getCommentsByArticleId = (req, res, next) => {
+  const { article_id } = req.params;
+  fetchCommentsByArticleId(article_id)
+    .then((comments) => {
+      res.status(200).send({ comments });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
 exports.getArticles = (req, res, next) => {
   fetchArticles().then((articles) => {
     res.status(200).send({ articles });
   });
 };
+
 
 exports.patchArticleById = (req, res, next) => {
   const { article_id } = req.params;
