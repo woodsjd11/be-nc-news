@@ -212,8 +212,26 @@ describe("GET /api/articles/:article_id/comments", () => {
         .then(({ body: { comments } }) => {
           expect(comments).toHaveLength(0);
         });
+      });
     });
-  });
+    describe("Errors", () => {
+      test("404: article_id not found", () => {
+        return request(app)
+          .get("/api/articles/98765/comments")
+          .expect(404)
+          .then(({ body: { message } }) => {
+            expect(message).toBe("404 Error: Article Not Found");
+          });
+      });
+      test("400: bad request", () => {
+        return request(app)
+          .get("/api/articles/badrequest/comments")
+          .expect(400)
+          .then(({ body: { message } }) => {
+            expect(message).toBe("400 Error: Bad Request");
+          });
+      });
+    });
 });
 
 describe("GET /api/articles", () => {
@@ -240,6 +258,7 @@ describe("GET /api/articles", () => {
           });
         });
     });
+
     test("200: returns articles sorted by default date, ordered by default descending", () => {
       return request(app)
         .get("/api/articles")
@@ -275,6 +294,14 @@ describe("GET /api/articles", () => {
           });
         });
     });
+    test("200: currently the topic does not exist, returns empty", () => {
+      return request(app)
+        .get("/api/articles?sort_by=author&order=asc&topic=buns")
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          expect(articles).toHaveLength(0);
+        });
+    });
   });
   describe("Errors", () => {
     test("400: Bad Request when supplied with incorrect sort_by query inc. sql injection", () => {
@@ -293,46 +320,9 @@ describe("GET /api/articles", () => {
           expect(message).toBe("400 Error: Invalid query");
         });
     });
-    test("404: Topic Not Found", () => {
-      return request(app)
-        .get("/api/articles?sort_by=author&order=asc&topic=buns")
-        .expect(404)
-        .then(({ body: { message } }) => {
-          expect(message).toBe("404 Error: Topic Not Found");
-        });
-    });
   });
 });
 
-describe("Errors", () => {
-  test("404: article_id not found", () => {
-    return request(app)
-      .get("/api/articles/98765/comments")
-      .expect(404)
-      .then(({ body: { message } }) => {
-        expect(message).toBe("404 Error: Article Not Found");
-      });
-  });
-  test("400: bad request", () => {
-    return request(app)
-      .get("/api/articles/badrequest/comments")
-      .expect(400)
-      .then(({ body: { message } }) => {
-        expect(message).toBe("400 Error: Bad Request");
-      });
-  });
-  test("200: article objects are sorted by date in descending order", () => {
-    return request(app)
-      .get("/api/articles")
-      .expect(200)
-      .then(({ body: { articles } }) => {
-        expect(articles).toBeSorted({
-          key: "created_at",
-          descending: true,
-        });
-      });
-  });
-});
 describe("POST /api/articles/:article_id/comments", () => {
   describe("Happy paths", () => {
     test("accepts an object with username and body properties", () => {
