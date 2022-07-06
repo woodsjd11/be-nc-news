@@ -43,15 +43,15 @@ exports.fetchArticles = (sort_by = "created_at", order = "desc", topic) => {
   }
   let queryStr = `SELECT articles.author, title, articles.article_id, topic, articles.created_at, articles.votes, COUNT(comments.article_id)::int AS comment_count FROM articles LEFT JOIN comments ON comments.article_id = articles.article_id`;
 
-  const topicFilter = [];
+  const topicValue = [];
 
   if (topic) {
     queryStr += " WHERE topic = $1";
-    topicFilter.push(topic);
+    topicValue.push(topic);
   }
   queryStr += ` GROUP BY articles.article_id ORDER BY ${sort_by} ${order}`;
   
-  return db.query(queryStr, topicFilter).then(({ rows, rowCount }) => {
+  return db.query(queryStr, topicValue).then(({ rows, rowCount }) => {
     if (rowCount > 0) {
       return rows;
     }
