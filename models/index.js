@@ -35,7 +35,10 @@ exports.fetchArticles = (sort_by = "created_at", order = "desc") => {
     "comment_count",
   ];
   const validOrderOptions = ["asc", "desc"];
-  if (!validSortOptions.includes(sort_by) || !validOrderOptions) {
+  if (
+    !validSortOptions.includes(sort_by) ||
+    !validOrderOptions.includes(order)
+  ) {
     return Promise.reject({ status: 400, message: "Invalid query" });
   }
   return db

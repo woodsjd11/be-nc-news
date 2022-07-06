@@ -266,9 +266,17 @@ describe("GET /api/articles", () => {
     });
   });
   describe("Errors", () => {
-    test("400: Bad Request when supplied with incorrect queries inc. sql injection", () => {
+    test("400: Bad Request when supplied with incorrect sort_by query inc. sql injection", () => {
       return request(app)
         .get("/api/articles?sort_by=SELECT*FROMarticles&order=asc")
+        .expect(400)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("400 Error: Invalid query");
+        });
+    });
+    test("400: Bad Request when supplied with incorrect order query inc. sql injection", () => {
+      return request(app)
+        .get("/api/articles?sort_by=title&order=SELECT*FROMarticles")
         .expect(400)
         .then(({ body: { message } }) => {
           expect(message).toBe("400 Error: Invalid query");
