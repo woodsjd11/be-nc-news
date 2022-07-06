@@ -69,19 +69,13 @@ exports.postCommentByArticleId = (req, res, next) => {
     err = { status: 400, message: "Bad Request" };
     throw err;
   }
+
   createCommentByArticleId(username, body, article_id)
     .then((comment) => {
       res.status(201).send({ comment });
     })
+
     .catch((err) => {
-      // 400 error for invalid username. Required as the same psql error code is being used for a 404 error - article not found
-      if (
-        err.detail ===
-        'Key (author)=(invalid user) is not present in table "users".'
-      ) {
-        res.status(400).send({ message: "400 Error: User Not Found" });
-      }
-      console.log(err);
       next(err);
     });
 };

@@ -242,6 +242,7 @@ describe("GET /api/articles", () => {
         expect(comments).toHaveLength(1);
         comments.forEach((comment) => {
           expect(Object.keys(comment)).toHaveLength(5);
+
           expect(comment).toEqual(
             expect.objectContaining({
               comment_id: null,
@@ -322,7 +323,7 @@ describe("POST /api/articles/:article_id/comments", () => {
         .send(postedObj)
         .expect(404)
         .then(({ body: { message } }) => {
-          expect(message).toBe("404 Error: Article Not Found");
+          expect(message).toBe("404 Error: Not Found");
         });
     });
     test("400: bad request - invalid article_id", () => {
@@ -338,7 +339,7 @@ describe("POST /api/articles/:article_id/comments", () => {
           expect(message).toBe("400 Error: Bad Request");
         });
     });
-    test("400: bad request - invalid username", () => {
+    test("404: bad request - invalid username", () => {
       const postedObj = {
         body: "New comment",
         username: "invalid user",
@@ -346,9 +347,9 @@ describe("POST /api/articles/:article_id/comments", () => {
       return request(app)
         .post("/api/articles/2/comments")
         .send(postedObj)
-        .expect(400)
+        .expect(404)
         .then(({ body: { message } }) => {
-          expect(message).toBe("400 Error: User Not Found");
+          expect(message).toBe("404 Error: Not Found");
         });
     });
     test("400: bad request - missing properties", () => {
