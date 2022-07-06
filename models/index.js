@@ -50,9 +50,12 @@ exports.fetchArticles = (sort_by = "created_at", order = "desc", topic) => {
     topicFilter.push(topic);
   }
   queryStr += ` GROUP BY articles.article_id ORDER BY ${sort_by} ${order}`;
-
-  return db.query(queryStr, topicFilter).then(({ rows }) => {
-    return rows;
+  
+  return db.query(queryStr, topicFilter).then(({ rows, rowCount }) => {
+    if (rowCount > 0) {
+      return rows;
+    }
+    return Promise.reject({ status: 404, message: "Topic Not Found" });
   });
 };
 

@@ -266,12 +266,12 @@ describe("GET /api/articles", () => {
     });
     test("200: returns articles filtered by topic", () => {
       return request(app)
-        .get("/api/articles?sort_by=author&order=asc&topic=cats")
+        .get("/api/articles?sort_by=author&order=asc&topic=mitch")
         .expect(200)
         .then(({ body: { articles } }) => {
           expect(articles).toBeSortedBy("author", { ascending: true });
           articles.forEach((article) => {
-            expect(article.topic).toBe("cats");
+            expect(article.topic).toBe("mitch");
           });
         });
     });
@@ -291,6 +291,14 @@ describe("GET /api/articles", () => {
         .expect(400)
         .then(({ body: { message } }) => {
           expect(message).toBe("400 Error: Invalid query");
+        });
+    });
+    test("404: Topic Not Found", () => {
+      return request(app)
+        .get("/api/articles?sort_by=author&order=asc&topic=buns")
+        .expect(404)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("404 Error: Topic Not Found");
         });
     });
   });
