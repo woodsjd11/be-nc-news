@@ -1,3 +1,4 @@
 \c nc_news_test;
-
-SELECT * FROM users WHERE username = "wrong"
+BEGIN;
+DELETE FROM comments WHERE comment_id = 10 RETURNING*;
+ROLLBACK;
