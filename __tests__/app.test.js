@@ -264,6 +264,17 @@ describe("GET /api/articles", () => {
           expect(articles).toBeSortedBy("author", { ascending: true });
         });
     });
+    test("200: returns articles filtered by topic", () => {
+      return request(app)
+        .get("/api/articles?sort_by=author&order=asc&topic=cats")
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          expect(articles).toBeSortedBy("author", { ascending: true });
+          articles.forEach((article) => {
+            expect(article.topic).toBe("cats");
+          });
+        });
+    });
   });
   describe("Errors", () => {
     test("400: Bad Request when supplied with incorrect sort_by query inc. sql injection", () => {

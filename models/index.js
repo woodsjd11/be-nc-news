@@ -24,7 +24,7 @@ exports.fetchUsers = () => {
   });
 };
 
-exports.fetchArticles = (sort_by = "created_at", order = "desc") => {
+exports.fetchArticles = (sort_by = "created_at", order = "desc", topic) => {
   const validSortOptions = [
     "title",
     "topic",
@@ -41,13 +41,19 @@ exports.fetchArticles = (sort_by = "created_at", order = "desc") => {
   ) {
     return Promise.reject({ status: 400, message: "Invalid query" });
   }
-  return db
-    .query(
-      `SELECT articles.author, title, articles.article_id, topic, articles.created_at, articles.votes, COUNT(comments.article_id)::int AS comment_count FROM articles LEFT JOIN comments ON comments.article_id = articles.article_id GROUP BY articles.article_id ORDER BY ${sort_by} ${order}`
-    )
-    .then(({ rows }) => {
-      return rows;
-    });
+  let queryStr = `SELECT articles.author, title, articles.article_id, topic, articles.created_at, articles.votes, COUNT(comments.article_id)::int AS comment_count FROM articles LEFT JOIN comments ON comments.article_id = articles.article_id`;
+
+  const topicFilter = [];
+
+  if (topic) {
+    queryStr += " WHERE topic = $1";
+    topicFilter.push(topic);
+  }
+  queryStr += ` GROUP BY articles.article_id ORDER BY ${sort_by} ${order}`;
+
+  return db.query(queryStr, topicFilter).then(({ rows }) => {
+    return rows;
+  });
 };
 
 exports.updateArticleById = (body, article_id) => {
