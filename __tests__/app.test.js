@@ -94,7 +94,6 @@ describe("404 errors handled", () => {
       });
   });
 });
-
 describe("GET /api/users", () => {
   describe("Happy paths", () => {
     test("responds with an array of user objects", () => {
@@ -112,7 +111,6 @@ describe("GET /api/users", () => {
     });
   });
 });
-
 describe("PATCH /api/articles/:article_id", () => {
   describe("Happy paths", () => {
     test("patch object with the key of 'inc_votes' will update the 'votes' property by incrementing/decrementing the current value stored", () => {
@@ -244,6 +242,7 @@ describe("GET /api/articles", () => {
         expect(comments).toHaveLength(1);
         comments.forEach((comment) => {
           expect(Object.keys(comment)).toHaveLength(5);
+
           expect(comment).toEqual(
             expect.objectContaining({
               comment_id: null,
@@ -285,5 +284,85 @@ describe("Errors", () => {
           descending: true,
         });
       });
+  });
+});
+describe("POST /api/articles/:article_id/comments", () => {
+  describe("Happy paths", () => {
+    test("accepts an object with username and body properties", () => {
+      const postedObj = {
+        body: "New comment",
+        username: "butter_bridge",
+      };
+      return request(app)
+        .post("/api/articles/2/comments")
+        .send(postedObj)
+        .expect(201)
+        .then(({ body: { comment } }) => {
+          expect(Object.keys(comment)).toHaveLength(6);
+          expect(comment).toEqual(
+            expect.objectContaining({
+              body: "New comment",
+              votes: 0,
+              author: "butter_bridge",
+              article_id: 2,
+              created_at: expect.any(String),
+              comment_id: 19,
+            })
+          );
+        });
+    });
+  });
+  describe("Errors", () => {
+    test("404: article not found", () => {
+      const postedObj = {
+        body: "New comment",
+        username: "butter_bridge",
+      };
+      return request(app)
+        .post("/api/articles/9898/comments")
+        .send(postedObj)
+        .expect(404)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("404 Error: Not Found");
+        });
+    });
+    test("400: bad request - invalid article_id", () => {
+      const postedObj = {
+        body: "New comment",
+        username: "butter_bridge",
+      };
+      return request(app)
+        .post("/api/articles/badrequest/comments")
+        .send(postedObj)
+        .expect(400)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("400 Error: Bad Request");
+        });
+    });
+    test("404: bad request - invalid username", () => {
+      const postedObj = {
+        body: "New comment",
+        username: "invalid user",
+      };
+      return request(app)
+        .post("/api/articles/2/comments")
+        .send(postedObj)
+        .expect(404)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("404 Error: Not Found");
+        });
+    });
+    test("400: bad request - missing properties", () => {
+      const postedObj = {
+        username: "invalid user",
+      };
+      return request(app)
+        .post("/api/articles/2/comments")
+        .send(postedObj)
+        .expect(400)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("400 Error: Bad Request");
+        });
+    });
   });
 });

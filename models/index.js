@@ -75,7 +75,18 @@ exports.fetchUsers = () => {
   });
 };
 
-
+exports.createCommentByArticleId = (username, body, article_id) => {
+  return db
+    .query(
+      "INSERT INTO comments (author, body, article_id) VALUES ($1, $2, $3) RETURNING*",
+      [username, body, article_id]
+    )
+    .then((data) => {
+      if (data.rowCount > 0) {
+        return data.rows[0];
+      }
+    });
+};
 exports.fetchCommentsByArticleId = (article_id) => {
   return db
     .query(
@@ -83,11 +94,11 @@ exports.fetchCommentsByArticleId = (article_id) => {
       [article_id]
     )
     .then((data) => {
-      console.log(data);
       if (data.rowCount > 0) {
         return data.rows;
       }
       return Promise.reject({ status: 404, message: "Article Not Found" });
     });
 };
+
 
