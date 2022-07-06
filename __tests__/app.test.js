@@ -353,3 +353,10 @@ describe("POST /api/articles/:article_id/comments", () => {
     });
   });
 });
+describe("DELETE /api/comments/:comment_id", () => {
+  describe("Happy paths", () => {
+    test("204: Deleted comment by comment_id", () => {
+      return request(app).delete("/api/comments/1").expect(204);
+    });
+  });
+});
