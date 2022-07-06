@@ -183,6 +183,31 @@ describe("PATCH /api/articles/:article_id", () => {
     });
   });
 });
+
+describe("GET /api/articles/:article_id/comments", () => {
+  describe("Happy paths", () => {
+    test("200: returns an array of comments for the given article_id", () => {
+      return request(app)
+        .get("/api/articles/1/comments")
+        .expect(200)
+        .then(({ body: { comments } }) => {
+          expect(comments).toHaveLength(11);
+          comments.forEach((comment) => {
+            expect(Object.keys(comment)).toHaveLength(5);
+            expect(comment).toEqual(
+              expect.objectContaining({
+                comment_id: expect.any(Number),
+                author: expect.any(String),
+                body: expect.any(String),
+                created_at: expect.any(String),
+              })
+            );
+          });
+        });
+    });
+  });
+});
+
 describe("GET /api/articles", () => {
   describe("Happy paths", () => {
     test("200: returns an array of article objects", () => {
@@ -200,20 +225,64 @@ describe("GET /api/articles", () => {
                 created_at: expect.any(String),
                 title: expect.any(String),
                 topic: expect.any(String),
+
                 votes: expect.any(Number),
               })
             );
           });
         });
     });
-    test("200: article objects are sorted by date in descending order", () => {
-      return request(app)
-        .get("/api/articles")
-        .expect(200)
-        .then(({ body: { articles } }) => {
-          expect(articles).toBeSorted({ key: "created_at", descending: true });
+  });
+
+  test("200: returns an empty array of comments for a valid article_id with no comments", () => {
+    return request(app)
+      .get("/api/articles/2/comments")
+      .expect(200)
+      .then(({ body: { comments } }) => {
+        expect(comments).toHaveLength(1);
+        comments.forEach((comment) => {
+          expect(Object.keys(comment)).toHaveLength(5);
+          expect(comment).toEqual(
+            expect.objectContaining({
+              comment_id: null,
+              author: null,
+              body: null,
+              created_at: null,
+              votes: null,
+            })
+          );
         });
-    });
+      });
+  });
+});
+
+describe("Errors", () => {
+  test("404: article_id not found", () => {
+    return request(app)
+      .get("/api/articles/98765/comments")
+      .expect(404)
+      .then(({ body: { message } }) => {
+        expect(message).toBe("404 Error: Article Not Found");
+      });
+  });
+  test("400: bad request", () => {
+    return request(app)
+      .get("/api/articles/badrequest/comments")
+      .expect(400)
+      .then(({ body: { message } }) => {
+        expect(message).toBe("400 Error: Bad Request");
+      });
+  });
+  test("200: article objects are sorted by date in descending order", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles).toBeSorted({
+          key: "created_at",
+          descending: true,
+        });
+      });
   });
 });
 describe("POST /api/articles/:article_id/comments", () => {

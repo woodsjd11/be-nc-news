@@ -3,6 +3,7 @@ const {
   updateArticleById,
   fetchArticleById,
   fetchUsers,
+  fetchCommentsByArticleId,
   fetchArticles,
   createCommentByArticleId,
 } = require("../models");
@@ -26,6 +27,17 @@ exports.getUsers = (req, res, next) => {
   fetchUsers().then((users) => {
     res.status(200).send({ users });
   });
+};
+
+exports.getCommentsByArticleId = (req, res, next) => {
+  const { article_id } = req.params;
+  fetchCommentsByArticleId(article_id)
+    .then((comments) => {
+      res.status(200).send({ comments });
+    })
+    .catch((err) => {
+      next(err);
+    });
 };
 
 exports.getArticles = (req, res, next) => {
@@ -62,13 +74,14 @@ exports.postCommentByArticleId = (req, res, next) => {
       res.status(201).send({ comment });
     })
     .catch((err) => {
-      //400 error for invalid username. Required as the same psql error code is being used for a 404 error - article not found
+      // 400 error for invalid username. Required as the same psql error code is being used for a 404 error - article not found
       if (
         err.detail ===
         'Key (author)=(invalid user) is not present in table "users".'
       ) {
         res.status(400).send({ message: "400 Error: User Not Found" });
       }
+      console.log(err);
       next(err);
     });
 };

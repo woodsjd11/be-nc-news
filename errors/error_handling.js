@@ -14,7 +14,7 @@ exports.handlePsqlErrors = (err, req, res, next) => {
   } else if (err.code === "23503") {
     res.status(404).send({ message: "404 Error: Article Not Found" });
   } else {
-    console.log(err);
+    
     next(err);
   }
 };
