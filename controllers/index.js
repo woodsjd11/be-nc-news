@@ -7,6 +7,7 @@ const {
   fetchArticles,
   createCommentByArticleId,
   checkArticleExists,
+  checkTopicExists,
 } = require("../models");
 
 exports.getTopics = (req, res, next) => {
@@ -45,9 +46,18 @@ exports.getCommentsByArticleId = (req, res, next) => {
 
 exports.getArticles = (req, res, next) => {
   const { sort_by, order, topic } = req.query;
-  fetchArticles(sort_by, order, topic)
-    .then((articles) => {
-      res.status(200).send({ articles });
+
+  const promise1 = checkTopicExists(topic);
+  const promise2 = fetchArticles(sort_by, order, topic);
+  Promise.allSettled([promise1, promise2])
+    .then(([prom1, prom2]) => {
+      if (topic && prom1.status === "rejected") {
+        throw prom1.reason;
+      } else if (prom2.status === "rejected") {
+        throw prom2.reason;
+      }
+
+      res.status(200).send({ articles: prom2.value });
     })
     .catch((err) => {
       next(err);

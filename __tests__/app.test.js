@@ -294,9 +294,9 @@ describe("GET /api/articles", () => {
           });
         });
     });
-    test("200: currently the topic does not exist, returns empty", () => {
+    test("200: valid topic, but topic does not exist on article, hence returns empty", () => {
       return request(app)
-        .get("/api/articles?sort_by=author&order=asc&topic=buns")
+        .get("/api/articles?sort_by=author&order=asc&topic=paper")
         .expect(200)
         .then(({ body: { articles } }) => {
           expect(articles).toEqual([]);
@@ -318,6 +318,14 @@ describe("GET /api/articles", () => {
         .expect(400)
         .then(({ body: { message } }) => {
           expect(message).toBe("400 Error: Invalid query");
+        });
+    });
+    test("404: invalid topic, topic does not exist", () => {
+      return request(app)
+        .get("/api/articles?sort_by=author&order=asc&topic=unkowntopic")
+        .expect(404)
+        .then(({ body: { message } }) => {
+          expect(message).toEqual("404 Error: Topic Not Found");
         });
     });
   });
