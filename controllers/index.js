@@ -4,6 +4,7 @@ const {
   fetchArticleById,
   fetchUsers,
   fetchCommentsByArticleId,
+  fetchArticles,
 } = require("../models");
 
 exports.getTopics = (req, res, next) => {
@@ -17,6 +18,7 @@ exports.getArticleById = (req, res, next) => {
       res.status(200).send({ article });
     })
     .catch((err) => {
+      console.log(err);
       next(err);
     });
 };
@@ -26,6 +28,7 @@ exports.getUsers = (req, res, next) => {
     res.status(200).send({ users });
   });
 };
+
 
 exports.getCommentsByArticleId = (req, res, next) => {
   const { article_id } = req.params;
@@ -37,6 +40,14 @@ exports.getCommentsByArticleId = (req, res, next) => {
       next(err);
     });
 };
+
+exports.getArticles = (req, res, next) => {
+  fetchArticles().then((articles) => {
+    res.status(200).send({ articles });
+  });
+};
+
+
 exports.patchArticleById = (req, res, next) => {
   const { article_id } = req.params;
   updateArticleById(req.body, article_id)
