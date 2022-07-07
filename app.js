@@ -9,7 +9,11 @@ const {
   getArticles,
   postCommentByArticleId,
 
+  getEndpoints,
+
+
   deleteByCommentId,
+
 } = require("./controllers");
 
 const {
@@ -21,6 +25,8 @@ const {
 const app = express();
 
 app.use(express.json());
+
+app.get("/api", getEndpoints);
 
 app.get("/api/topics", getTopics);
 
@@ -45,4 +51,5 @@ app.use("*", (req, res) => {
 app.use(handleCustomErrors);
 app.use(handlePsqlErrors);
 app.use(serverError);
+
 module.exports = app;

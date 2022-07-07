@@ -17,6 +17,8 @@ exports.handlePsqlErrors = (err, req, res, next) => {
     next(err);
   }
 };
+
 exports.serverError = (err, req, res, next) => {
   res.status(500).send();
 };
+

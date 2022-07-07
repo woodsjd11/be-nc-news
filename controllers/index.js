@@ -7,12 +7,16 @@ const {
   fetchArticles,
   createCommentByArticleId,
   checkArticleExists,
-
+  fetchEndpoints,
   checkTopicExists,
-
   removeByCommentId,
-
 } = require("../models");
+
+exports.getEndpoints = (req, res, next) => {
+  fetchEndpoints().then((endpoints) => {
+    res.status(200).send({endpoints});
+  });
+};
 
 exports.getTopics = (req, res, next) => {
   fetchTopics().then((topics) => res.status(200).send({ topics }));
