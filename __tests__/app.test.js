@@ -3,6 +3,7 @@ const app = require("../app");
 const db = require("../db/connection");
 const seed = require("../db/seeds/seed");
 const testData = require("../db/data/test-data/index");
+const endpointJsonFile = require("../endpoints.json");
 require("jest-sorted");
 
 beforeEach(() => {
@@ -419,19 +420,11 @@ describe("POST /api/articles/:article_id/comments", () => {
 describe("GET /api", () => {
   describe("Happy paths", () => {
     test("returns JSON describing all the available endpoints", () => {
-      function isJson(str) {
-        try {
-          JSON.parse(str);
-        } catch (err) {
-          return false;
-        }
-        return true;
-      }
       return request(app)
         .get("/api")
         .expect(200)
         .then(({ body: { endpoints } }) => {
-          expect(isJson(endpoints)).toBe(true);
+          expect(endpoints).toEqual(endpointJsonFile);
         });
     });
   });

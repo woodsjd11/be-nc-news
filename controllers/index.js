@@ -12,11 +12,10 @@ const {
   removeByCommentId,
 } = require("../models");
 
+const endpoints = require("../endpoints.json");
+
 exports.getEndpoints = (req, res, next) => {
-  fetchEndpoints().then((endpoints) => {
-    console.log(endpoints);
-    res.status(200).send(JSON.stringify({ endpoints }));
-  });
+  res.status(200).send({endpoints});
 };
 
 exports.getTopics = (req, res, next) => {
