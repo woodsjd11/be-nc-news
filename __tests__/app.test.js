@@ -264,6 +264,7 @@ describe("GET /api/articles", () => {
         .get("/api/articles")
         .expect(200)
         .then(({ body: { articles } }) => {
+          expect(articles).toHaveLength(12);
           expect(articles).toBeSortedBy("created_at", { descending: true });
         });
     });
@@ -272,6 +273,7 @@ describe("GET /api/articles", () => {
         .get("/api/articles?sort_by=title")
         .expect(200)
         .then(({ body: { articles } }) => {
+          expect(articles).toHaveLength(12);
           expect(articles).toBeSortedBy("title", { descending: true });
         });
     });
@@ -280,6 +282,7 @@ describe("GET /api/articles", () => {
         .get("/api/articles?sort_by=author&order=asc")
         .expect(200)
         .then(({ body: { articles } }) => {
+          expect(articles).toHaveLength(12);
           expect(articles).toBeSortedBy("author", { ascending: true });
         });
     });
@@ -288,6 +291,7 @@ describe("GET /api/articles", () => {
         .get("/api/articles?sort_by=author&order=asc&topic=mitch")
         .expect(200)
         .then(({ body: { articles } }) => {
+          expect(articles).toHaveLength(11);
           expect(articles).toBeSortedBy("author", { ascending: true });
           articles.forEach((article) => {
             expect(article.topic).toBe("mitch");
