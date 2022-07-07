@@ -5,3 +5,9 @@
 
 - '.env. environments should be gitignored. '.env.*' should be written in the '.gitignore' file.
 ```
+
+## Project Summary
+
+```
+https://newsyon.herokuapp.com/api
+```

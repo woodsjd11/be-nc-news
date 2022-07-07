@@ -14,7 +14,8 @@ const {
 
 exports.getEndpoints = (req, res, next) => {
   fetchEndpoints().then((endpoints) => {
-    res.status(200).send({endpoints});
+    console.log(endpoints);
+    res.status(200).send(JSON.stringify({ endpoints }));
   });
 };
 
@@ -116,4 +117,3 @@ exports.deleteByCommentId = (req, res, next) => {
       next(err);
     });
 };
-
