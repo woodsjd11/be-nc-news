@@ -1,4 +1,5 @@
 const db = require("../db/connection");
+const articles = require("../db/data/test-data/articles");
 
 exports.fetchTopics = () => {
   return db.query("SELECT * FROM topics").then(({ rows }) => {
@@ -23,14 +24,36 @@ exports.fetchUsers = () => {
   });
 };
 
-exports.fetchArticles = () => {
-  return db
-    .query(
-      "SELECT articles.author, title, articles.article_id, topic, articles.created_at, articles.votes, COUNT(comments.article_id)::int AS comment_count FROM articles LEFT JOIN comments ON comments.article_id = articles.article_id GROUP BY articles.article_id ORDER BY articles.created_at DESC"
-    )
-    .then(({ rows }) => {
-      return rows;
-    });
+exports.fetchArticles = (sort_by = "created_at", order = "desc", topic) => {
+  const validSortOptions = [
+    "title",
+    "topic",
+    "author",
+    "body",
+    "created_at",
+    "votes",
+    "comment_count",
+  ];
+  const validOrderOptions = ["asc", "desc"];
+  if (
+    !validSortOptions.includes(sort_by) ||
+    !validOrderOptions.includes(order)
+  ) {
+    return Promise.reject({ status: 400, message: "Invalid query" });
+  }
+  let queryStr = `SELECT articles.author, title, articles.article_id, topic, articles.created_at, articles.votes, COUNT(comments.article_id)::int AS comment_count FROM articles LEFT JOIN comments ON comments.article_id = articles.article_id`;
+
+  const topicValue = [];
+
+  if (topic) {
+    queryStr += " WHERE topic = $1";
+    topicValue.push(topic);
+  }
+  queryStr += ` GROUP BY articles.article_id ORDER BY ${sort_by} ${order}`;
+
+  return db.query(queryStr, topicValue).then(({ rows }) => {
+    return rows;
+  });
 };
 
 exports.updateArticleById = (body, article_id) => {
@@ -106,12 +129,21 @@ exports.checkArticleExists = (article_id) => {
       }
     });
 };
+
+exports.checkTopicExists = (topic) => {
+  return db
+    .query("SELECT * FROM topics WHERE slug = $1", [topic])
+    .then(({ rowCount }) => {
+      if (rowCount === 0) {
+        return Promise.reject({ status: 404, message: "Topic Not Found" });
+
 exports.removeByCommentId = (comment_id) => {
   return db
     .query("DELETE FROM comments WHERE comment_id = $1", [comment_id])
     .then(({ rowCount }) => {
       if (rowCount === 0) {
         return Promise.reject({ status: 404, message: "Comment Not Found" });
+
       }
     });
 };

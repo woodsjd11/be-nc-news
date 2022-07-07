@@ -8,12 +8,15 @@ const {
   getCommentsByArticleId,
   getArticles,
   postCommentByArticleId,
+
   deleteByCommentId,
+
 } = require("./controllers");
 
 const {
   handleCustomErrors,
   handlePsqlErrors,
+  serverError,
 } = require("./errors/error_handling");
 
 const app = express();
@@ -42,4 +45,5 @@ app.use("*", (req, res) => {
 
 app.use(handleCustomErrors);
 app.use(handlePsqlErrors);
+app.use(serverError);
 module.exports = app;

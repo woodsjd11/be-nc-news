@@ -1,9 +1,2 @@
 You are now connected to database "nc_news_test" as user "Djwoods_".
-BEGIN
- comment_id |          body          | article_id |    author     | votes |     created_at      
-------------+------------------------+------------+---------------+-------+---------------------
-         10 | git push origin master |          3 | icellusedkars |     0 | 2020-06-20 08:24:00
-(1 row)
 
-DELETE 1
-ROLLBACK
