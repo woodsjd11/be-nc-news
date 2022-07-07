@@ -294,7 +294,7 @@ describe("GET /api/articles", () => {
           });
         });
     });
-    test("200: valid topic, but topic does not exist on article, hence returns empty", () => {
+    test("200: valid topic, but topic does not exist on article, hence returns an empty array", () => {
       return request(app)
         .get("/api/articles?sort_by=author&order=asc&topic=paper")
         .expect(200)
