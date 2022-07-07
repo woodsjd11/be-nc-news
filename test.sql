@@ -1,3 +1,6 @@
 \c nc_news_test;
 
-SELECT * FROM topics WHERE slug = mitch
+BEGIN;
+DELETE FROM comments WHERE comment_id = 10 RETURNING*;
+ROLLBACK;
+

@@ -415,3 +415,28 @@ describe("POST /api/articles/:article_id/comments", () => {
     });
   });
 });
+describe("DELETE /api/comments/:comment_id", () => {
+  describe("Happy paths", () => {
+    test("204: Deleted comment by comment_id", () => {
+      return request(app).delete("/api/comments/1").expect(204);
+    });
+  });
+  describe("Errors", () => {
+    test("404: comment not found", () => {
+      return request(app)
+        .delete("/api/comments/99999")
+        .expect(404)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("404 Error: Comment Not Found");
+        });
+    });
+    test("400: Bad Request, invalid typeof comment_id", () => {
+      return request(app)
+        .delete("/api/comments/badrequest")
+        .expect(400)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("400 Error: Bad Request");
+        });
+    });
+  });
+});
