@@ -1,21 +1,9 @@
 const db = require("../db/connection");
-const articles = require("../db/data/test-data/articles");
 
 exports.fetchTopics = () => {
   return db.query("SELECT * FROM topics").then(({ rows }) => {
     return rows;
   });
-};
-
-exports.fetchArticleById = (article_id) => {
-  return db
-    .query("SELECT * FROM articles WHERE article_id = $1", [article_id])
-    .then((data) => {
-      if (data.rowCount > 0) {
-        return data.rows[0];
-      }
-      return Promise.reject({ status: 404, message: "Article Not Found" });
-    });
 };
 
 exports.fetchUsers = () => {
@@ -56,6 +44,31 @@ exports.fetchArticles = (sort_by = "created_at", order = "desc", topic) => {
   });
 };
 
+exports.fetchArticleById = (article_id) => {
+  return db
+    .query(
+      "SELECT articles.*, COUNT(comments.article_id) AS comment_count FROM articles LEFT JOIN comments ON comments.article_id = articles.article_id WHERE articles.article_id = $1 GROUP BY articles.article_id",
+      [article_id]
+    )
+    .then((data) => {
+      if (data.rowCount > 0) {
+        return data.rows[0];
+      }
+      return Promise.reject({ status: 404, message: "Article Not Found" });
+    });
+};
+
+exports.fetchCommentsByArticleId = (article_id) => {
+  return db
+    .query(
+      "SELECT comment_id, votes, created_at, author, body FROM comments WHERE comments.article_id = $1",
+      [article_id]
+    )
+    .then(({ rows }) => {
+      return rows;
+    });
+};
+
 exports.updateArticleById = (body, article_id) => {
   // handle missing inc_votes key
   if (!body.inc_votes) {
@@ -78,26 +91,6 @@ exports.updateArticleById = (body, article_id) => {
     });
 };
 
-exports.fetchArticleById = (article_id) => {
-  return db
-    .query(
-      "SELECT articles.*, COUNT(comments.article_id) AS comment_count FROM articles LEFT JOIN comments ON comments.article_id = articles.article_id WHERE articles.article_id = $1 GROUP BY articles.article_id",
-      [article_id]
-    )
-    .then((data) => {
-      if (data.rowCount > 0) {
-        return data.rows[0];
-      }
-      return Promise.reject({ status: 404, message: "Article Not Found" });
-    });
-};
-
-exports.fetchUsers = () => {
-  return db.query("SELECT * FROM users").then(({ rows }) => {
-    return rows;
-  });
-};
-
 exports.createCommentByArticleId = (username, body, article_id) => {
   return db
     .query(
@@ -110,16 +103,17 @@ exports.createCommentByArticleId = (username, body, article_id) => {
       }
     });
 };
-exports.fetchCommentsByArticleId = (article_id) => {
+
+exports.removeByCommentId = (comment_id) => {
   return db
-    .query(
-      "SELECT comment_id, votes, created_at, author, body FROM comments WHERE comments.article_id = $1",
-      [article_id]
-    )
-    .then(({ rows }) => {
-      return rows;
+    .query("DELETE FROM comments WHERE comment_id = $1", [comment_id])
+    .then(({ rowCount }) => {
+      if (rowCount === 0) {
+        return Promise.reject({ status: 404, message: "Comment Not Found" });
+      }
     });
 };
+
 exports.checkArticleExists = (article_id) => {
   return db
     .query("SELECT * FROM articles WHERE article_id = $1", [article_id])
@@ -136,14 +130,7 @@ exports.checkTopicExists = (topic) => {
     .then(({ rowCount }) => {
       if (rowCount === 0) {
         return Promise.reject({ status: 404, message: "Topic Not Found" });
-
-exports.removeByCommentId = (comment_id) => {
-  return db
-    .query("DELETE FROM comments WHERE comment_id = $1", [comment_id])
-    .then(({ rowCount }) => {
-      if (rowCount === 0) {
-        return Promise.reject({ status: 404, message: "Comment Not Found" });
-
       }
     });
 };
+
