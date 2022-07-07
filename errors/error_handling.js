@@ -14,8 +14,11 @@ exports.handlePsqlErrors = (err, req, res, next) => {
   } else if (err.code === "23503") {
     res.status(404).send({ message: "404 Error: Not Found" });
   } else {
-    
     next(err);
   }
+};
+
+exports.serverError = (err, req, res, next) => {
+  res.status(500).send();
 };
 

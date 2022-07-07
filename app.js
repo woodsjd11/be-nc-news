@@ -8,7 +8,12 @@ const {
   getCommentsByArticleId,
   getArticles,
   postCommentByArticleId,
+
   getEndpoints,
+
+
+  deleteByCommentId,
+
 } = require("./controllers");
 
 const {
@@ -25,17 +30,19 @@ app.get("/api", getEndpoints);
 
 app.get("/api/topics", getTopics);
 
-app.get("/api/articles/:article_id", getArticleById);
-
 app.get("/api/users", getUsers);
 
-app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
-
 app.get("/api/articles", getArticles);
+
+app.get("/api/articles/:article_id", getArticleById);
+
+app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
 
 app.patch("/api/articles/:article_id", patchArticleById);
 
 app.post("/api/articles/:article_id/comments", postCommentByArticleId);
+
+app.delete("/api/comments/:comment_id", deleteByCommentId);
 
 app.use("*", (req, res) => {
   res.status(404).send({ message: "404 Error: Invalid Path" });
@@ -43,5 +50,6 @@ app.use("*", (req, res) => {
 
 app.use(handleCustomErrors);
 app.use(handlePsqlErrors);
+app.use(serverError);
 
 module.exports = app;

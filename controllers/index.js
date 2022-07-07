@@ -8,6 +8,8 @@ const {
   createCommentByArticleId,
   checkArticleExists,
   fetchEndpoints,
+  checkTopicExists,
+  removeByCommentId,
 } = require("../models");
 
 exports.getEndpoints = (req, res, next) => {
@@ -18,6 +20,32 @@ exports.getEndpoints = (req, res, next) => {
 
 exports.getTopics = (req, res, next) => {
   fetchTopics().then((topics) => res.status(200).send({ topics }));
+};
+
+exports.getUsers = (req, res, next) => {
+  fetchUsers().then((users) => {
+    res.status(200).send({ users });
+  });
+};
+
+exports.getArticles = (req, res, next) => {
+  const { sort_by, order, topic } = req.query;
+
+  const promise1 = checkTopicExists(topic);
+  const promise2 = fetchArticles(sort_by, order, topic);
+  Promise.allSettled([promise1, promise2])
+    .then(([prom1, prom2]) => {
+      if (topic && prom1.status === "rejected") {
+        throw prom1.reason;
+      } else if (prom2.status === "rejected") {
+        throw prom2.reason;
+      }
+
+      res.status(200).send({ articles: prom2.value });
+    })
+    .catch((err) => {
+      next(err);
+    });
 };
 
 exports.getArticleById = (req, res, next) => {
@@ -31,12 +59,6 @@ exports.getArticleById = (req, res, next) => {
     });
 };
 
-exports.getUsers = (req, res, next) => {
-  fetchUsers().then((users) => {
-    res.status(200).send({ users });
-  });
-};
-
 exports.getCommentsByArticleId = (req, res, next) => {
   const { article_id } = req.params;
   const promise1 = checkArticleExists(article_id);
@@ -48,12 +70,6 @@ exports.getCommentsByArticleId = (req, res, next) => {
     .catch((err) => {
       next(err);
     });
-};
-
-exports.getArticles = (req, res, next) => {
-  fetchArticles().then((articles) => {
-    res.status(200).send({ articles });
-  });
 };
 
 exports.patchArticleById = (req, res, next) => {
@@ -89,3 +105,15 @@ exports.postCommentByArticleId = (req, res, next) => {
       next(err);
     });
 };
+
+exports.deleteByCommentId = (req, res, next) => {
+  const { comment_id } = req.params;
+  removeByCommentId(comment_id)
+    .then(() => {
+      res.status(204).send();
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+

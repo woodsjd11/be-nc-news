@@ -205,6 +205,32 @@ describe("GET /api/articles/:article_id/comments", () => {
           });
         });
     });
+    test("200: returns an empty array of comments for a valid article_id with no comments", () => {
+      return request(app)
+        .get("/api/articles/2/comments")
+        .expect(200)
+        .then(({ body: { comments } }) => {
+          expect(comments).toHaveLength(0);
+        });
+    });
+  });
+  describe("Errors", () => {
+    test("404: article_id not found", () => {
+      return request(app)
+        .get("/api/articles/98765/comments")
+        .expect(404)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("404 Error: Article Not Found");
+        });
+    });
+    test("400: bad request", () => {
+      return request(app)
+        .get("/api/articles/badrequest/comments")
+        .expect(400)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("400 Error: Bad Request");
+        });
+    });
   });
 });
 
@@ -232,47 +258,83 @@ describe("GET /api/articles", () => {
           });
         });
     });
-  });
 
-  test("200: returns an empty array of comments for a valid article_id with no comments", () => {
-    return request(app)
-      .get("/api/articles/2/comments")
-      .expect(200)
-      .then(({ body: { comments } }) => {
-        expect(comments).toHaveLength(0);
-      });
-  });
-});
-
-describe("Errors", () => {
-  test("404: article_id not found", () => {
-    return request(app)
-      .get("/api/articles/98765/comments")
-      .expect(404)
-      .then(({ body: { message } }) => {
-        expect(message).toBe("404 Error: Article Not Found");
-      });
-  });
-  test("400: bad request", () => {
-    return request(app)
-      .get("/api/articles/badrequest/comments")
-      .expect(400)
-      .then(({ body: { message } }) => {
-        expect(message).toBe("400 Error: Bad Request");
-      });
-  });
-  test("200: article objects are sorted by date in descending order", () => {
-    return request(app)
-      .get("/api/articles")
-      .expect(200)
-      .then(({ body: { articles } }) => {
-        expect(articles).toBeSorted({
-          key: "created_at",
-          descending: true,
+    test("200: returns articles sorted by default date, ordered by default descending", () => {
+      return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          expect(articles).toHaveLength(12);
+          expect(articles).toBeSortedBy("created_at", { descending: true });
         });
-      });
+    });
+    test("200: returns articles sorted by any valid column, ordered by default descending", () => {
+      return request(app)
+        .get("/api/articles?sort_by=title")
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          expect(articles).toHaveLength(12);
+          expect(articles).toBeSortedBy("title", { descending: true });
+        });
+    });
+    test("200: returns articles sorted by any valid column, ordered by ascending", () => {
+      return request(app)
+        .get("/api/articles?sort_by=author&order=asc")
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          expect(articles).toHaveLength(12);
+          expect(articles).toBeSortedBy("author", { ascending: true });
+        });
+    });
+    test("200: returns articles filtered by topic", () => {
+      return request(app)
+        .get("/api/articles?sort_by=author&order=asc&topic=mitch")
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          expect(articles).toHaveLength(11);
+          expect(articles).toBeSortedBy("author", { ascending: true });
+          articles.forEach((article) => {
+            expect(article.topic).toBe("mitch");
+          });
+        });
+    });
+    test("200: valid topic, but topic does not exist on article, hence returns an empty array", () => {
+      return request(app)
+        .get("/api/articles?sort_by=author&order=asc&topic=paper")
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          expect(articles).toEqual([]);
+        });
+    });
+  });
+  describe("Errors", () => {
+    test("400: Bad Request when supplied with incorrect sort_by query inc. sql injection", () => {
+      return request(app)
+        .get("/api/articles?sort_by=SELECT*FROMarticles&order=asc")
+        .expect(400)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("400 Error: Invalid query");
+        });
+    });
+    test("400: Bad Request when supplied with incorrect order query inc. sql injection", () => {
+      return request(app)
+        .get("/api/articles?sort_by=title&order=SELECT*FROMarticles")
+        .expect(400)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("400 Error: Invalid query");
+        });
+    });
+    test("404: invalid topic, topic does not exist", () => {
+      return request(app)
+        .get("/api/articles?sort_by=author&order=asc&topic=unkowntopic")
+        .expect(404)
+        .then(({ body: { message } }) => {
+          expect(message).toEqual("404 Error: Topic Not Found");
+        });
+    });
   });
 });
+
 describe("POST /api/articles/:article_id/comments", () => {
   describe("Happy paths", () => {
     test("accepts an object with username and body properties", () => {
@@ -353,6 +415,7 @@ describe("POST /api/articles/:article_id/comments", () => {
     });
   });
 });
+
 describe("GET /api", () => {
   describe("Happy paths", () => {
     test("returns JSON describing all the available endpoints", () => {
@@ -369,6 +432,29 @@ describe("GET /api", () => {
         .expect(200)
         .then(({ body: { endpoints } }) => {
           expect(isJson(endpoints)).toBe(true);
+        
+describe("DELETE /api/comments/:comment_id", () => {
+  describe("Happy paths", () => {
+    test("204: Deleted comment by comment_id", () => {
+      return request(app).delete("/api/comments/1").expect(204);
+    });
+  });
+  describe("Errors", () => {
+    test("404: comment not found", () => {
+      return request(app)
+        .delete("/api/comments/99999")
+        .expect(404)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("404 Error: Comment Not Found");
+        });
+    });
+    test("400: Bad Request, invalid typeof comment_id", () => {
+      return request(app)
+        .delete("/api/comments/badrequest")
+        .expect(400)
+        .then(({ body: { message } }) => {
+          expect(message).toBe("400 Error: Bad Request");
+
         });
     });
   });
