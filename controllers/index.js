@@ -10,10 +10,10 @@ const {
   fetchEndpoints,
 } = require("../models");
 
+const endpoints = require("../endpoints.json");
+
 exports.getEndpoints = (req, res, next) => {
-  fetchEndpoints().then((endpoints) => {
-    res.status(200).send({endpoints});
-  });
+  res.status(200).send({endpoints});
 };
 
 exports.getTopics = (req, res, next) => {
