@@ -353,3 +353,23 @@ describe("POST /api/articles/:article_id/comments", () => {
     });
   });
 });
+describe("GET /api", () => {
+  describe("Happy paths", () => {
+    test("returns JSON describing all the available endpoints", () => {
+      function isJson(str) {
+        try {
+          JSON.parse(str);
+        } catch (err) {
+          return false;
+        }
+        return true;
+      }
+      return request(app)
+        .get("/api")
+        .expect(200)
+        .then(({ body: { endpoints } }) => {
+          expect(isJson(endpoints)).toBe(true);
+        });
+    });
+  });
+});
