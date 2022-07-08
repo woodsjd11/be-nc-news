@@ -1,20 +1,5 @@
 const express = require("express");
-
-const {
-  getTopics,
-  getArticleById,
-  patchArticleById,
-  getUsers,
-  getCommentsByArticleId,
-  getArticles,
-  postCommentByArticleId,
-
-  getEndpoints,
-
-
-  deleteByCommentId,
-
-} = require("./controllers");
+const app = express();
 
 const {
   handleCustomErrors,
@@ -22,27 +7,11 @@ const {
   serverError,
 } = require("./errors/error_handling");
 
-const app = express();
+const apiRouter = require("./routes/api-router");
 
 app.use(express.json());
 
-app.get("/api", getEndpoints);
-
-app.get("/api/topics", getTopics);
-
-app.get("/api/users", getUsers);
-
-app.get("/api/articles", getArticles);
-
-app.get("/api/articles/:article_id", getArticleById);
-
-app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
-
-app.patch("/api/articles/:article_id", patchArticleById);
-
-app.post("/api/articles/:article_id/comments", postCommentByArticleId);
-
-app.delete("/api/comments/:comment_id", deleteByCommentId);
+app.use("/api", apiRouter);
 
 app.use("*", (req, res) => {
   res.status(404).send({ message: "404 Error: Invalid Path" });
