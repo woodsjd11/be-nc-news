@@ -1,32 +1,12 @@
 const {
-  fetchTopics,
   updateArticleById,
   fetchArticleById,
-  fetchUsers,
   fetchCommentsByArticleId,
   fetchArticles,
   createCommentByArticleId,
   checkArticleExists,
-  fetchEndpoints,
   checkTopicExists,
-  removeByCommentId,
 } = require("../models");
-
-const endpoints = require("../endpoints.json");
-
-exports.getEndpoints = (req, res, next) => {
-  res.status(200).send({endpoints});
-};
-
-exports.getTopics = (req, res, next) => {
-  fetchTopics().then((topics) => res.status(200).send({ topics }));
-};
-
-exports.getUsers = (req, res, next) => {
-  fetchUsers().then((users) => {
-    res.status(200).send({ users });
-  });
-};
 
 exports.getArticles = (req, res, next) => {
   const { sort_by, order, topic } = req.query;
@@ -101,17 +81,6 @@ exports.postCommentByArticleId = (req, res, next) => {
       res.status(201).send({ comment });
     })
 
-    .catch((err) => {
-      next(err);
-    });
-};
-
-exports.deleteByCommentId = (req, res, next) => {
-  const { comment_id } = req.params;
-  removeByCommentId(comment_id)
-    .then(() => {
-      res.status(204).send();
-    })
     .catch((err) => {
       next(err);
     });
