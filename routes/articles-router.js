@@ -9,8 +9,9 @@ const {
 
 router.get("/", getArticles);
 router.route("/:article_id").get(getArticleById).patch(patchArticleById);
-
-router.get("/:article_id/comments", getCommentsByArticleId);
-router.post("/:article_id/comments", postCommentByArticleId);
+router
+  .route("/:article_id/comments")
+  .get(getCommentsByArticleId)
+  .post(postCommentByArticleId);
 
 module.exports = router;
