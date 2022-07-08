@@ -1,17 +1,5 @@
 const db = require("../db/connection");
 
-exports.fetchTopics = () => {
-  return db.query("SELECT * FROM topics").then(({ rows }) => {
-    return rows;
-  });
-};
-
-exports.fetchUsers = () => {
-  return db.query("SELECT * FROM users").then(({ rows }) => {
-    return rows;
-  });
-};
-
 exports.fetchArticles = (sort_by = "created_at", order = "desc", topic) => {
   const validSortOptions = [
     "title",
@@ -104,16 +92,6 @@ exports.createCommentByArticleId = (username, body, article_id) => {
     });
 };
 
-exports.removeByCommentId = (comment_id) => {
-  return db
-    .query("DELETE FROM comments WHERE comment_id = $1", [comment_id])
-    .then(({ rowCount }) => {
-      if (rowCount === 0) {
-        return Promise.reject({ status: 404, message: "Comment Not Found" });
-      }
-    });
-};
-
 exports.checkArticleExists = (article_id) => {
   return db
     .query("SELECT * FROM articles WHERE article_id = $1", [article_id])
@@ -133,4 +111,3 @@ exports.checkTopicExists = (topic) => {
       }
     });
 };
-

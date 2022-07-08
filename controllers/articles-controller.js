@@ -6,7 +6,7 @@ const {
   createCommentByArticleId,
   checkArticleExists,
   checkTopicExists,
-} = require("../models");
+} = require("../models/articles-model");
 
 exports.getArticles = (req, res, next) => {
   const { sort_by, order, topic } = req.query;
