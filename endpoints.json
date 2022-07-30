@@ -4,7 +4,6 @@
   },
   "GET /api/users": {
     "description": "serves an array of all users",
-    "queries": [],
     "exampleResponse": {
       "users": [
         {
@@ -24,6 +23,17 @@
   "GET /api/articles": {
     "description": "serves an array of all topics",
     "queries": ["topic", "sort_by", "order"],
+    "topic": ["coding", "cooking", "football"],
+    "sort_by": [
+      "title",
+      "topic",
+      "author",
+      "body",
+      "created_at",
+      "votes",
+      "comment_count"
+    ],
+    "order": ["asc", "desc"],
     "exampleResponse": {
       "articles": [
         {
@@ -40,7 +50,6 @@
   },
   "GET /api/articles/:article_id": {
     "description": "serves an an object for the given article_id",
-    "queries": [],
     "exampleResponse": {
       "article": [
         {
@@ -58,7 +67,6 @@
   },
   "GET /api/articles/:article_id/comments": {
     "description": "serves an array of comments for the given article_id",
-    "queries": [],
     "exampleResponse": {
       "comments": [
         {
