@@ -2,28 +2,6 @@
   "GET /api": {
     "description": "serves up a json representation of all the available endpoints of the api"
   },
-  "GET /api/topics": {
-    "description": "serves an array of all topics",
-    "queries": [],
-    "exampleResponse": {
-      "topics": [{ "slug": "football", "description": "Footie!" }]
-    }
-  },
-  "GET /api/articles": {
-    "description": "serves an array of all topics",
-    "queries": ["topic", "sort_by", "order"],
-    "exampleResponse": {
-      "articles": [
-        {
-          "title": "Seafood substitutions are increasing",
-          "topic": "cooking",
-          "author": "weegembump",
-          "body": "Text from the article..",
-          "created_at": "2020-07-09T20:11:00.000Z"
-        }
-      ]
-    }
-  },
   "GET /api/users": {
     "description": "serves an array of all users",
     "queries": [],
@@ -37,17 +15,25 @@
       ]
     }
   },
-  "GET /api/articles/:article_id/comments": {
-    "description": "serves an array of comments for the given article_id",
-    "queries": [],
+  "GET /api/topics": {
+    "description": "serves an array of all topics",
     "exampleResponse": {
-      "comments": [
+      "topics": [{ "slug": "football", "description": "Footie!" }]
+    }
+  },
+  "GET /api/articles": {
+    "description": "serves an array of all topics",
+    "queries": ["topic", "sort_by", "order"],
+    "exampleResponse": {
+      "articles": [
         {
-          "comment_id": 7,
-          "name": "brad",
+          "author": "weegembump",
+          "title": "Seafood substitutions are increasing",
+          "article_id": 34,
+          "topic": "cooking",
           "created_at": "2020-07-09T20:11:00.000Z",
-          "author": "butter_bridge",
-          "body": "that's nice"
+          "votes": 14,
+          "comment_count": 13
         }
       ]
     }
@@ -58,13 +44,29 @@
     "exampleResponse": {
       "article": [
         {
-          "author": "Paul",
-          "title": "Damn it's hot",
           "article_id": "brad",
-          "body": "that's nice",
+          "title": "Damn it's hot",
           "topic": "ovens",
+          "author": "Paul",
+          "body": "that's nice",
           "created_at": "2020-07-09T20:11:00.000Z",
-          "votes": 42
+          "votes": 42,
+          "comment_count": "13"
+        }
+      ]
+    }
+  },
+  "GET /api/articles/:article_id/comments": {
+    "description": "serves an array of comments for the given article_id",
+    "queries": [],
+    "exampleResponse": {
+      "comments": [
+        {
+          "comment_id": 7,
+          "votes": 20,
+          "created_at": "2020-07-09T20:11:00.000Z",
+          "author": "butter_bridge",
+          "body": "that's nice"
         }
       ]
     }
@@ -78,12 +80,12 @@
     "exampleResponse": {
       "article": [
         {
-          "body": "New comment",
+          "comment_id": 19,
           "votes": 0,
-          "author": "butter_bridge",
-          "article_id": 2,
           "created_at": "2020-07-09T20:11:00.000Z",
-          "comment_id": 19
+          "author": "butter_bridge",
+          "body": "New comment",
+          "article_id": 2
         }
       ]
     }
@@ -105,7 +107,8 @@
           "author": "butter_bridge",
           "body": "I find this existence challenging",
           "created_at": "2020-07-09T20:11:00.000Z",
-          "votes": 110
+          "votes": 110,
+          "comment_count": "15"
         }
       ]
     }
